@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/banner.png" alt="Hetzner SSH Tools Banner" width="100%">
+  <img src="images/banner.png" alt="Hetzner SSH Tools Banner" width="70%">
 </p>
 
 # Hetzner SSH Tools (Windows)
