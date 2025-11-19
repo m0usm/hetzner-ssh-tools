@@ -1,157 +1,78 @@
 <p align="center">
-  <img src="images/banner.png" alt="Hetzner SSH Tools Banner" width="60%">
+  <img src="images/banner.png" alt="Hetzner SSH Tools Banner" width="55%">
 </p>
 
 # Hetzner SSH Tools (Windows)
 
-Leichte Windows-Batch-Skripte, die das Einrichten von SSH-Schlüsseln und einen sicheren, passwortlosen Zugriff auf Hetzner-Server automatisieren.
+Batch-Skripte für schnelles SSH-Key-Setup und passwortlosen Zugriff auf Hetzner-Server.  
+Batch scripts for quick SSH key setup and passwordless access to Hetzner servers.
 
 ---
 
 # Deutsch
 
-## Überblick
+## Funktionen
+- Automatische SSH-Key-Erstellung (`ed25519`)
+- Public-Key-Deployment auf den Server
+- Automatische Korrektur der `.ssh`-Berechtigungen
+- Direktes Öffnen einer SSH-Verbindung (optional via Windows Terminal)
+- Separates Quick-Connect-Skript für täglichen Login
 
-Die Hetzner SSH Tools ermöglichen ein schnelles und komfortables Setup für sichere SSH-Logins unter Windows.  
-Das Setup-Skript erstellt automatisch einen SSH-Key, kopiert den Public Key auf den Server und öffnet direkt eine SSH-Verbindung.  
-Das zweite Skript dient als schneller „Daily Login“-Connector.
+## Skripte
 
-## Enthaltene Skripte
+### Hetzner-Setup-And-Connect.bat
+- Fragt IP/Hostname und Benutzer  
+- Erstellt bei Bedarf SSH-Key  
+- Kopiert Public Key zu `~/.ssh/authorized_keys`  
+- Startet SSH-Session  
 
-### 1. Hetzner-Setup-And-Connect.bat
-- Fragt Server-IP/Hostname und Benutzer ab  
-- Erstellt automatisch einen SSH-Key (`ed25519`), falls keiner existiert  
-- Überträgt den Public Key auf den Server (`~/.ssh/authorized_keys`)  
-- Setzt automatisch die korrekten SSH-Berechtigungen  
-- Zeigt empfohlene Sicherheitseinstellungen an  
-- Startet direkt eine SSH-Verbindung  
-- Optional: nutzt Windows Terminal (`wt.exe`)
-
-### 2. Hetzner-Connect.bat
-- Fragt Server-IP/Hostname und Benutzer ab  
-- Verwendet vorhandenen SSH-Key unter `%USERPROFILE%\.ssh\id_ed25519`  
-- Baut sofort eine SSH-Verbindung auf  
-- Ideal für den täglichen Login
-
----
+### Hetzner-Connect.bat
+- Verwendet bestehenden Key (`%USERPROFILE%\.ssh\id_ed25519`)  
+- Schneller, passwortloser Login
 
 ## Voraussetzungen
-- Windows 10 oder 11  
-- OpenSSH-Client installiert  
-  *(Einstellungen → Apps → Optionale Features → OpenSSH-Client)*  
-- Optional: Windows Terminal (`wt.exe`)
-
----
-
-## Installation
-1. `.bat`-Dateien herunterladen  
-2. An beliebiger Stelle speichern  
-3. Mit Doppelklick ausführen
-
----
+- Windows 10/11  
+- OpenSSH-Client  
+- Optional: Windows Terminal
 
 ## Verwendung
-
-### Setup-Skript
-1. Skript starten  
-2. IP/Hostname eingeben  
-3. Benutzer eingeben (Standard: `root`)  
-4. Passwort einmalig eingeben (für Public Key Deployment)  
-5. Danach erfolgt jeder Login passwortlos
-
-### Connect-Skript
-1. Skript starten  
-2. IP eingeben  
-3. Benutzer eingeben  
-4. Sofort verbunden
-
----
-
-## Sicherheit
-- Private SSH-Keys bleiben **immer lokal**  
-- Nur der Public Key wird übertragen  
-- `.ssh`-Berechtigungen werden automatisch korrigiert  
-- Verwendet sichere `ed25519`-Schlüssel
-
----
+1. Setup-Skript starten → IP/Benutzer eingeben → Passwort **einmal** → fertig  
+2. Danach Connect-Skript für schnellen Login nutzen
 
 ## Lizenz
-MIT-Lizenz — siehe `LICENSE`.
+MIT-Lizenz
 
 ---
 
 # English
 
-## Overview
+## Features
+- Automatic SSH key generation (`ed25519`)
+- Public key deployment to the server
+- Automatic `.ssh` permission fixing
+- Direct SSH connection (optional via Windows Terminal)
+- Separate quick-connect script for daily use
 
-Hetzner SSH Tools provide a quick and convenient way to set up secure SSH access on Windows.  
-The setup script automatically generates an SSH key, deploys the public key to the server, and opens a secure SSH session.  
-The second script serves as a fast daily-connect tool.
+## Scripts
 
-## Included Scripts
+### Hetzner-Setup-And-Connect.bat
+- Asks for IP/hostname and user  
+- Generates key if missing  
+- Uploads public key to `~/.ssh/authorized_keys`  
+- Starts SSH session  
 
-### 1. Hetzner-Setup-And-Connect.bat
-- Prompts for server IP/hostname and SSH user  
-- Automatically generates an `ed25519` SSH key if missing  
-- Uploads the public key to `~/.ssh/authorized_keys`  
-- Fixes SSH file permissions automatically  
-- Displays recommended SSH security settings  
-- Opens an SSH session immediately  
-- Optional: uses Windows Terminal (`wt.exe`)
-
-### 2. Hetzner-Connect.bat
-- Prompts for server IP/hostname and user  
-- Uses the existing SSH key at `%USERPROFILE%\.ssh\id_ed25519`  
-- Opens an SSH connection instantly  
-- Ideal for daily login
-
----
+### Hetzner-Connect.bat
+- Uses existing key (`%USERPROFILE%\.ssh\id_ed25519`)  
+- Fast, passwordless login
 
 ## Requirements
-- Windows 10 or 11  
-- OpenSSH Client installed  
-  *(Settings → Apps → Optional features → OpenSSH Client)*  
-- Optional: Windows Terminal (`wt.exe`)
-
----
-
-## Installation
-1. Download the `.bat` files  
-2. Save them anywhere  
-3. Run via double-click
-
----
+- Windows 10/11  
+- OpenSSH Client  
+- Optional: Windows Terminal
 
 ## Usage
-
-### Setup Script
-1. Run the script  
-2. Enter IP/hostname  
-3. Enter user (default: `root`)  
-4. Enter your password once (public key upload)  
-5. All future logins are passwordless
-
-### Connect Script
-1. Run the script  
-2. Enter IP  
-3. Enter user  
-4. Instant SSH connection
-
----
-
-## Security
-- Private SSH keys **always stay on your machine**  
-- Only the public key is uploaded  
-- Permissions are automatically fixed  
-- Uses secure `ed25519` keys
-
----
+1. Run setup script → enter IP/user → password once → done  
+2. Use connect script for instant daily login
 
 ## License
-MIT License — see `LICENSE`.
-
----
-
-## Support
-If this project helps you, please consider leaving a ⭐  
-Wenn dir dieses Projekt hilft, freue ich mich über einen ⭐
+MIT License
