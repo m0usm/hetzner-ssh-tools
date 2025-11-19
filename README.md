@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="images/banner.png" alt="Hetzner SSH Tools Banner" width="100%">
+</p>
+
 # Hetzner SSH Tools (Windows)
 
 Simple Windows batch scripts to automate SSH key setup and passwordless SSH login for Hetzner servers.  
