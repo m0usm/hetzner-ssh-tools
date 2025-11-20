@@ -39,9 +39,6 @@ Batch scripts for quick SSH key setup and passwordless access to Hetzner servers
 1. Setup-Skript starten → IP/Benutzer eingeben → Passwort **einmal** → fertig  
 2. Danach Connect-Skript für schnellen Login nutzen
 
-## Lizenz
-MIT-Lizenz
-
 ---
 
 # English
