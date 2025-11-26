@@ -2,6 +2,8 @@
   <img src="images/banner.png" alt="Hetzner SSH Tools Banner" width="55%">
 </p>
 
+---
+
 <div align="center">
 
 <p>If you'd like to support the development of this script, you can use one of the options below:</p>
