@@ -16,6 +16,8 @@
 
 <p style="margin-top:6px;">Thank you for your support! ❤️</p>
 
+</div>
+
 # Hetzner SSH Tools (Windows)
 
 Batch-Skripte für schnelles SSH-Key-Setup und passwortlosen Zugriff auf Hetzner-Server.  
