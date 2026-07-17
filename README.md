@@ -1,5 +1,9 @@
 ---
+<p align="center">
+  <img src="./img/banner.png" alt="Spicetify Setup Banner" width="35%"/>
+</p>
 
+---
 ![Hetzner SSH Tools Banner](images/banner.png)
 
 ---
