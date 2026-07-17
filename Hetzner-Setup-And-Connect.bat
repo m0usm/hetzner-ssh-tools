@@ -1,14 +1,14 @@
 @echo off
-setlocal ENABLEDELAYEDEXPANSION
+setlocal
 
 echo.
 echo ============================================
-echo   Hetzner SSH-Key Setup ^& Auto-Connect
+echo    Hetzner SSH-Key Setup ^& Auto-Connect
 echo ============================================
 echo.
 
 REM --------------------------------
-REM 0) Server-IP und User abfragen
+REM 0) Server-IP, User und Alias abfragen
 REM --------------------------------
 :ASK_SERVER
 echo Bitte gib die Server-IP oder den Hostnamen ein (z.B. 192.168.1.10 oder server.example.com):
@@ -26,9 +26,16 @@ set /p USER=SSH-User:
 if "%USER%"=="" set "USER=root"
 
 echo.
+echo Bitte gib einen kurzen Alias fuer den Server ein (z.B. hetzner-web).
+echo Damit kannst du dich spaeter einfach per "ssh ALIAS" verbinden.
+set /p HOSTALIAS=Alias (Enter fuer 'hetzner'): 
+if "%HOSTALIAS%"=="" set "HOSTALIAS=hetzner"
+
+echo.
 echo Verwende folgende Daten:
-echo   Server: %SERVER%
-echo   User:   %USER%
+echo    Server: %SERVER%
+echo    User:   %USER%
+echo    Alias:  %HOSTALIAS%
 echo.
 choice /C JN /M "Stimmen diese Angaben? (J/N)"
 if errorlevel 2 (
@@ -43,14 +50,13 @@ REM 1) Grundeinstellungen fuer Key
 REM --------------------------------
 set "KEY_NAME=id_ed25519"
 set "KEY_DIR=%USERPROFILE%\.ssh"
-set "USE_WT=ja"
+set "SSH_CONFIG=%KEY_DIR%\config"
 
 echo.
 echo === Konfiguration ===
-echo Key-Datei:   %KEY_DIR%\%KEY_NAME%
-echo Win-Terminal: %USE_WT%
+echo    Key-Datei:  %KEY_DIR%\%KEY_NAME%
+echo    SSH-Config: %SSH_CONFIG%
 echo.
-
 
 REM --------------------------------
 REM 2) Pruefen, ob ssh / ssh-keygen vorhanden sind
@@ -59,7 +65,7 @@ where ssh >nul 2>&1
 if errorlevel 1 (
     echo [FEHLER] "ssh" wurde nicht gefunden.
     echo Installiere unter Windows:
-    echo   Einstellungen ^> Apps ^> Optionale Features ^> OpenSSH-Client
+    echo    Einstellungen ^> Apps ^> Optionale Features ^> OpenSSH-Client
     goto END
 )
 
@@ -92,7 +98,10 @@ if exist "%KEY_PATH%" (
     echo [OK] Private Key existiert bereits: %KEY_PATH%
 ) else (
     echo [INFO] Kein Key gefunden. Erzeuge neuen SSH-Key...
-    ssh-keygen -t ed25519 -f "%KEY_PATH%" -N "" -C "%USERNAME%@%COMPUTERNAME%-%SERVER%"
+    echo [HINWEIS] Der Key wird OHNE Passphrase erstellt (Komfort-Entscheidung).
+    echo           Wer den Key zusaetzlich schuetzen will, kann spaeter mit
+    echo           "ssh-keygen -p -f %KEY_PATH%" eine Passphrase setzen.
+    ssh-keygen -t ed25519 -f "%KEY_PATH%" -N "" -C "%USERNAME%@%COMPUTERNAME%"
     if errorlevel 1 (
         echo [FEHLER] ssh-keygen ist fehlgeschlagen.
         goto END
@@ -106,14 +115,14 @@ if not exist "%PUB_KEY_PATH%" (
 )
 
 REM --------------------------------
-REM 5) Public Key auf Server kopieren
+REM 5) Public Key auf Server kopieren (ohne Duplikate)
 REM --------------------------------
 echo.
 echo === Public Key auf den Server kopieren ===
 echo Es kann sein, dass du JETZT EIN LETZTES MAL das Passwort eingeben musst.
 echo.
 
-type "%PUB_KEY_PATH%" | ssh %USER%@%SERVER% "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat ^>^> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+type "%PUB_KEY_PATH%" | ssh -o StrictHostKeyChecking=accept-new %USER%@%SERVER% "mkdir -p ~/.ssh && chmod 700 ~/.ssh && KEY=$(cat) && { grep -qxF \"$KEY\" ~/.ssh/authorized_keys 2>/dev/null || echo \"$KEY\" >> ~/.ssh/authorized_keys; } && chmod 600 ~/.ssh/authorized_keys"
 if errorlevel 1 (
     echo [FEHLER] Konnte Public Key nicht auf den Server kopieren.
     goto END
@@ -121,44 +130,71 @@ if errorlevel 1 (
 
 echo.
 echo [OK] Public Key wurde erfolgreich auf dem Server hinterlegt.
+echo      (Bereits vorhandene Keys werden nicht doppelt eingetragen.)
 echo.
 
 REM --------------------------------
-REM 6) Hinweise fuer sichere SSH-Konfiguration
+REM 6) Eintrag in ~/.ssh/config schreiben
+REM --------------------------------
+set "ALIAS_EXISTS="
+if exist "%SSH_CONFIG%" (
+    findstr /R /C:"^Host  *%HOSTALIAS%$" /C:"^Host %HOSTALIAS%$" "%SSH_CONFIG%" >nul 2>&1
+    if not errorlevel 1 set "ALIAS_EXISTS=1"
+)
+
+if defined ALIAS_EXISTS (
+    echo [INFO] Alias "%HOSTALIAS%" existiert bereits in %SSH_CONFIG%.
+    echo        Es wird kein neuer Eintrag geschrieben.
+) else (
+    (
+        echo.
+        echo Host %HOSTALIAS%
+        echo     HostName %SERVER%
+        echo     User %USER%
+        echo     IdentityFile ~/.ssh/%KEY_NAME%
+    ) >> "%SSH_CONFIG%"
+    echo [OK] Alias "%HOSTALIAS%" wurde in %SSH_CONFIG% eingetragen.
+    echo      Ab jetzt reicht ueberall:  ssh %HOSTALIAS%
+    echo      (funktioniert auch mit scp, rsync, VS Code Remote-SSH usw.)
+)
+echo.
+
+REM --------------------------------
+REM 7) Hinweise fuer sichere SSH-Konfiguration
 REM --------------------------------
 echo ============================================
-echo   EMPFOHLENE SERVER-KONFIGURATION
+echo    EMPFOHLENE SERVER-KONFIGURATION
 echo ============================================
 echo Melde dich per SSH an und bearbeite die Datei:
-echo   /etc/ssh/sshd_config
+echo    /etc/ssh/sshd_config
 echo.
 echo Wichtige Optionen:
-echo   PasswordAuthentication no
-echo   PermitRootLogin prohibit-password ^(oder no, wenn du einen separaten User nutzt^)
+echo    PasswordAuthentication no
+echo    PermitRootLogin prohibit-password   ^(oder no, wenn du einen separaten User nutzt^)
 echo.
 echo Danach auf dem Server ausfuehren:
-echo   systemctl reload sshd
+echo    systemctl reload sshd
 echo.
 pause
 
-
 REM --------------------------------
-REM 7) Mit Key verbinden
+REM 8) Mit Key verbinden
 REM --------------------------------
 echo.
-echo === Verbinde jetzt per SSH mit Key ===
+echo === Verbinde jetzt per SSH ===
 echo.
+choice /C JN /M "Im Windows Terminal (wt) oeffnen, falls vorhanden? (J/N)"
+if errorlevel 2 (
+    ssh %HOSTALIAS%
+    goto END
+)
 
-if /I "%USE_WT%"=="ja" (
-    where wt >nul 2>&1
-    if errorlevel 1 (
-        echo [WARNUNG] Windows Terminal (wt.exe) nicht gefunden. Starte normale SSH Verbindung:
-        ssh -i "%KEY_PATH%" %USER%@%SERVER%
-    ) else (
-        start "" wt.exe ssh -i "%KEY_PATH%" %USER%@%SERVER%
-    )
+where wt >nul 2>&1
+if errorlevel 1 (
+    echo [WARNUNG] Windows Terminal ^(wt.exe^) nicht gefunden. Starte normale SSH-Verbindung:
+    ssh %HOSTALIAS%
 ) else (
-    ssh -i "%KEY_PATH%" %USER%@%SERVER%
+    start "" wt.exe ssh %HOSTALIAS%
 )
 
 :END
