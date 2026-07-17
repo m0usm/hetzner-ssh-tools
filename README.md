@@ -4,15 +4,19 @@
 </p>
 
 ---
-![Hetzner SSH Tools Banner](images/banner.png)
 
----
 
-If you'd like to support the development of this script, you can use one of the options below:
+<p align="center">
+  If you'd like to support the development of this script, you can use one of the options below:
+</p>
 
-[![](https://img.shields.io/badge/Hetzner-Referral-e60000?style=for-the-badge&logo=hetzner&logoColor=white)](https://hetzner.cloud/?ref=6BtzZwMqWY0Q)
+<p align="center">
+  <a href="https://hetzner.cloud/?ref=6BtzZwMqWY0Q">
+    <img src="https://img.shields.io/badge/Hetzner-Referral-e60000?style=for-the-badge&logo=hetzner&logoColor=white" alt="Hetzner Referral"/>
+  </a>
+</p>
 
-Thank you for your support! ❤️
+<p align="center">Thank you for your support! ❤️</p>
 
 # Hetzner SSH Tools (Windows)
 
