@@ -1,6 +1,6 @@
 ---
 <p align="center">
-  <img src="./images/banner.png" alt="Spicetify Setup Banner" width="35%"/>
+  <img src="./images/banner.png" alt="Spicetify Setup Banner" width="55%"/>
 </p>
 
 ---
